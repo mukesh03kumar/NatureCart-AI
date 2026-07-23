@@ -25,12 +25,28 @@ urlpatterns = [
     path('', include('Seller_app.urls')),
 ]
 
+def case_insensitive_serve(request, path, document_root=None, **kwargs):
+    import os
+    from django.views.static import serve
+    if document_root:
+        full_path = os.path.join(document_root, path)
+        if not os.path.exists(full_path):
+            dir_name = os.path.dirname(full_path)
+            base_name = os.path.basename(full_path).lower()
+            if os.path.isdir(dir_name):
+                for filename in os.listdir(dir_name):
+                    if filename.lower() == base_name:
+                        # Reconstruct path using the correct case on disk
+                        path = os.path.join(os.path.dirname(path), filename).replace('\\', '/')
+                        break
+    return serve(request, path, document_root=document_root, **kwargs)
+
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
-    from django.views.static import serve
     from django.urls import re_path
     urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+        re_path(r'^media/(?P<path>.*)$', case_insensitive_serve, {'document_root': settings.MEDIA_ROOT}),
     ]
+
 
