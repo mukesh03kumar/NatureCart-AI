@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-success section-title animate-fade-in">Manage Orders</h2>
+
+<div class="row animate-fade-in">
+    <div class="col-lg-10 mx-auto">
+        {% for item_data in orders_data %}
+            <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white overflow-hidden">
+                <!-- Order Header -->
+                <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <span class="text-muted fs-8">ORDER ID:</span>
+                        <strong class="text-dark fs-7">#{{ item_data.order.id }}</strong>
+                        <span class="mx-2 text-muted">|</span>
+                        <span class="text-muted fs-8">DATE:</span>
+                        <strong class="text-dark fs-7">{{ item_data.order.created_at|date:"M d, Y H:i" }}</strong>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <span class="badge bg-success-light text-success rounded-pill px-3 py-1.5 fs-8">
+                            Current Status: {{ item_data.order.status }}
+                        </span>
+                        
+                        <!-- Status Update Form -->
+                        <form method="POST" action="{% url 'update_order_status' item_data.order.id %}" class="d-flex align-items-center gap-2">
+                            {% csrf_token %}
+                            <select name="status" class="form-select form-select-sm bg-white border-success rounded-pill py-1 px-3 fs-8" style="width: auto;" required>
+                                <option value="Pending" {% if item_data.order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Processing" {% if item_data.order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                <option value="Shipped" {% if item_data.order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if item_data.order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="Cancelled" {% if item_data.order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 fs-8">Update</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Customer & Delivery Details -->
+                        <div class="col-md-5 border-end-md">
+                            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-truck-ramp-box me-1"></i> Delivery & Customer Details</h6>
+                            <div class="fs-7 text-dark">
+                                <p class="mb-2"><strong>Name:</strong> {{ item_data.order.customer.get_full_name|default:item_data.order.customer.username }}</p>
+                                <p class="mb-2"><strong>Email:</strong> {{ item_data.order.customer.email }}</p>
+                                <p class="mb-2"><strong>Phone:</strong> {{ item_data.customer_profile.phone }}</p>
+                                <p class="mb-0"><strong>Shipping Address:</strong><br>
+                                    <span class="text-muted fs-7.5">{{ item_data.customer_profile.address }}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Products Ordered from this Seller -->
+                        <div class="col-md-7">
+                            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-clipboard-list me-1"></i> Products Ordered from Your Shop</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless align-middle mb-0 fs-7">
+                                    <thead>
+                                        <tr class="border-bottom text-muted">
+                                            <th>Product Name</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in item_data.items %}
+                                            <tr class="border-bottom">
+                                                <td>
+                                                    <span class="fw-semibold text-dark">{{ item.product.name|default:"Deleted Product" }}</span>
+                                                    <span class="d-block fs-8 text-success">Plastic Saved: {{ item.product.plastic_saving_weight }} kg</span>
+                                                </td>
+                                                <td class="text-center">{{ item.quantity }}</td>
+                                                <td class="text-end font-monospace">₹ {% widthratio item.price 1 item.quantity %}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                <span class="fw-bold text-muted fs-7">Your Share Total:</span>
+                                <span class="fw-bold text-success fs-6">₹ {{ item_data.seller_total }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center">
+                <div class="fs-1 mb-3 text-muted">📦</div>
+                <h4 class="fw-bold">No Orders Placed Yet</h4>
+                <p class="text-muted">Once customers buy your sustainable products, their delivery details and orders will appear here.</p>
+                <div class="mt-4">
+                    <a href="{% url 'seller_dashboard' %}" class="btn btn-success px-4 py-2 rounded-pill fw-semibold">Seller Dashboard</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in">
+    <div class="col-md-8 col-lg-7">
+        <div class="card border-0 shadow rounded-4 overflow-hidden">
+            <div class="bg-forest text-center py-4 px-3 text-white">
+                <h3 class="fw-bold mb-1">Join the Green Movement </h3>
+                <p class="text-white-50 fs-7 mb-0">Shop, save carbon, and build a plastic-free future</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 bg-white">
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="username" class="form-label fw-medium text-success">Username</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="username" name="username" placeholder="e.g. green_user" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-medium text-success">Email Address</label>
+                            <input type="email" class="form-control bg-light border-0 py-2" id="email" name="email" placeholder="email@domain.com" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label fw-medium text-success">First Name</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label fw-medium text-success">Last Name</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="last_name" name="last_name" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label fw-medium text-success">Phone Number</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="role" class="form-label fw-medium text-success">I want to join as</label>
+                            <select class="form-select bg-light border-0 py-2" id="role" name="role" required>
+                                <option value="Customer">Customer (Shop Sustainable Goods & Track Impact)</option>
+                                <option value="Seller">Seller (Sell Certified Eco-Friendly Goods)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="preference" class="form-label fw-medium text-success">Your Primary Sustainability Goal (AI preference)</label>
+                        <select class="form-select bg-light border-0 py-2" id="preference" name="preference">
+                            <option value="Zero-Waste">Zero-Waste Focus (Reduce overall waste)</option>
+                            <option value="Organic">Organic & Natural (Chemical-free household)</option>
+                            <option value="Plastic-Free">100% Plastic-Free (Ditch plastic packaging)</option>
+                            <option value="Carbon-Footprint">Carbon Footprint Minimizer (Lower CO2 impact)</option>
+                        </select>
+                        <div class="form-text fs-8 text-muted">Our AI recommendation engine uses this goal to suggest matching items.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label fw-medium text-success">Shipping Address</label>
+                        <textarea class="form-control bg-light border-0" id="address" name="address" rows="2" placeholder="Street name, City, Zipcode" required></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-medium text-success">Password</label>
+                            <input type="password" class="form-control bg-light border-0 py-2" id="password" name="password" placeholder="Create password" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label fw-medium text-success">Confirm Password</label>
+                            <input type="password" class="form-control bg-light border-0 py-2" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent w-100 py-2.5 rounded-pill fw-bold text-dark shadow-sm">
+                        Create Account
+                    </button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-0 text-muted fs-7">
+                        Already have a green profile? 
+                        <a href="{% url 'login' %}" class="text-success fw-semibold text-decoration-none">Login Here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

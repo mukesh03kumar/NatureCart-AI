@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-success section-title">Shopping Cart</h2>
+
+{% if cart_items.exists %}
+<div class="row g-4 animate-fade-in">
+    <!-- Items Column -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle table-borderless">
+                    <thead>
+                        <tr class="border-bottom text-muted fs-7">
+                            <th scope="col">Product</th>
+                            <th scope="col" class="text-center">Quantity</th>
+                            <th scope="col" class="text-end">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr class="border-bottom">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="product-img-wrapper rounded-3 bg-light d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; aspect-ratio: 1/1;">
+                                        {% if item.product.images.first %}
+                                            <img src="{{ item.product.images.first.image.url }}" class="product-img rounded-3" alt="{{ item.product.name }}">
+                                        {% else %}
+                                            <span class="fs-6">🌿</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 text-dark">{{ item.product.name }}</h6>
+                                        <span class="fs-8 text-success font-monospace">CO₂: -{{ item.product.co2_saving_weight }} kg/unit</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <form method="POST" action="{% url 'update_cart_item' item.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="decrease">
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-circle" style="width: 28px; height: 28px; padding:0; display:flex; align-items:center; justify-content:center;">-</button>
+                                    </form>
+                                    <span class="fw-bold px-2">{{ item.quantity }}</span>
+                                    <form method="POST" action="{% url 'update_cart_item' item.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="increase">
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-circle" style="width: 28px; height: 28px; padding:0; display:flex; align-items:center; justify-content:center;">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <span class="fw-bold text-success">₹ {% widthratio item.product.price 1 item.quantity %}</span>
+                                <form method="POST" action="{% url 'update_cart_item' item.id %}" class="mt-1">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="btn btn-link text-danger fs-8 p-0 text-decoration-none"><i class="fa-solid fa-trash me-1"></i>Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Column -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h5 class="fw-bold text-success mb-3">Eco-Impact Impact Summary</h5>
+            <div class="detail-eco-card p-3 mb-4 bg-light rounded-3 shadow-sm border-start-0 border-top border-4 border-success">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted fs-7"><i class="fa-solid fa-cloud text-success me-1"></i> CO₂ Saved:</span>
+                    <strong class="font-monospace text-dark">{{ total_co2_savings }} kg</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted fs-7"><i class="fa-solid fa-trash text-success me-1"></i> Plastic Saved:</span>
+                    <strong class="font-monospace text-dark">{{ total_plastic_savings }} kg</strong>
+                </div>
+            </div>
+
+            <div class="border-top pt-3 mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal:</span>
+                    <span class="fw-medium">₹ {{ subtotal }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Green Delivery:</span>
+                    <span class="text-success fw-medium">FREE</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2">
+                    <span class="fw-bold fs-5">Total:</span>
+                    <span class="fw-bold fs-5 text-success">₹ {{ subtotal }}</span>
+                </div>
+            </div>
+
+            <a href="{% url 'checkout' %}" class="btn btn-success w-100 py-2.5 rounded-pill fw-bold shadow-sm">
+                Confirm & Check Out
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5 animate-fade-in">
+    <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+        <div class="fs-1 text-muted mb-3">🛒</div>
+        <h4 class="fw-bold">Your Cart is Empty</h4>
+        <p class="text-muted">It looks like you haven't added any sustainable products yet.</p>
+        <div class="mt-4">
+            <a href="/" class="btn btn-success px-4 py-2 rounded-pill fw-semibold">
+                Explore Sustainable Catalogue
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

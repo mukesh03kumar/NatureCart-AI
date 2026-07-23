@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 text-success section-title animate-fade-in">Secure Checkout</h2>
+
+<div class="row g-4 animate-fade-in">
+    <!-- Left Column: Payment options -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-success mb-4"><i class="fa-solid fa-lock me-2"></i> Select Payment Method</h5>
+            
+            <!-- Tabs selection -->
+            <ul class="nav nav-pills mb-4 gap-2" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active category-pill m-0 px-4 py-2 border-0" id="pills-card-tab" data-bs-toggle="pill" data-bs-target="#pills-card" type="button" role="tab" aria-controls="pills-card" aria-selected="true" onclick="setPaymentMethod('Card')">
+                        <i class="fa-solid fa-credit-card me-2"></i>Credit/Debit Card
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link category-pill m-0 px-4 py-2 border-0" id="pills-upi-tab" data-bs-toggle="pill" data-bs-target="#pills-upi" type="button" role="tab" aria-controls="pills-upi" aria-selected="false" onclick="setPaymentMethod('UPI')">
+                        <i class="fa-solid fa-mobile-screen me-2"></i>UPI / QR Code
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link category-pill m-0 px-4 py-2 border-0" id="pills-cod-tab" data-bs-toggle="pill" data-bs-target="#pills-cod" type="button" role="tab" aria-controls="pills-cod" aria-selected="false" onclick="setPaymentMethod('Cash on Delivery')">
+                        <i class="fa-solid fa-truck-moving me-2"></i>Green COD
+                    </button>
+                </li>
+            </ul>
+            
+            <form id="payment-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="payment_method" id="payment-method-field" value="Card">
+                
+                <div class="tab-content" id="pills-tabContent">
+                    <!-- Card Payment Form -->
+                    <div class="tab-pane fade show active" id="pills-card" role="tabpanel" aria-labelledby="pills-card-tab">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="cardholder" class="form-label fw-medium text-success fs-7.5">Cardholder Name</label>
+                                <input type="text" class="form-control bg-light border-0 py-2.5" id="cardholder" placeholder="Enter name on card">
+                            </div>
+                            <div class="col-md-8">
+                                <label for="cardnumber" class="form-label fw-medium text-success fs-7.5">Card Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fa-solid fa-credit-card text-muted"></i></span>
+                                    <input type="text" class="form-control bg-light border-0 py-2.5" id="cardnumber" placeholder="4000 1234 5678 9010" maxlength="19">
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <label for="cardexpiry" class="form-label fw-medium text-success fs-7.5">Expiry</label>
+                                <input type="text" class="form-control bg-light border-0 py-2.5 text-center" id="cardexpiry" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <label for="cardcvv" class="form-label fw-medium text-success fs-7.5">CVV</label>
+                                <input type="password" class="form-control bg-light border-0 py-2.5 text-center" id="cardcvv" placeholder="***" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- UPI Payment Option -->
+                    <div class="tab-pane fade" id="pills-upi" role="tabpanel" aria-labelledby="pills-upi-tab">
+                        <div class="text-center py-3 bg-light rounded-4 border p-3">
+                            <!-- Dynamic simulated QR Code -->
+                            <div class="d-inline-block bg-white p-3 rounded-3 shadow-xs mb-3">
+                                <i class="fa-solid fa-qrcode text-dark" style="font-size: 7.5rem;"></i>
+                            </div>
+                            <h6 class="fw-bold text-success">Scan QR Code to Pay</h6>
+                            <p class="fs-8 text-muted mb-4">Scan using Google Pay, PhonePe, Paytm, or BHIM. Amount: <strong>₹ {{ subtotal }}</strong></p>
+                            
+                            <div class="col-md-8 mx-auto">
+                                <label for="upi_id" class="form-label fw-medium text-success fs-7.5">Or enter your UPI ID</label>
+                                <input type="text" class="form-control bg-white border-success py-2 text-center" id="upi_id" placeholder="example@upi">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cash on Delivery Option -->
+                    <div class="tab-pane fade" id="pills-cod" role="tabpanel" aria-labelledby="pills-cod-tab">
+                        <div class="alert alert-success border-0 rounded-4 p-4 mb-0">
+                            <h6 class="fw-bold d-flex align-items-center mb-2"><i class="fa-solid fa-circle-check fs-5 me-2"></i> Green Delivery COD Enabled</h6>
+                            <p class="fs-7.5 text-success-light-dark mb-0">
+                                Pay cash or card to the delivery agent on arrival. Your order will be dispatched in biodegradable reusable shipping boxes to reduce cardboards.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Complete Simulated Payment (₹ {{ subtotal }})
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Right Column: Order Summary -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h5 class="fw-bold text-success mb-3">Order Summary</h5>
+            
+            <div class="mb-4">
+                {% for item in cart_items %}
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="product-img-wrapper rounded bg-light d-flex align-items-center justify-content-center me-2.5" style="width: 42px; height: 42px; aspect-ratio: 1/1;">
+                                {% if item.product.images.first %}
+                                    <img src="{{ item.product.images.first.image.url }}" class="product-img rounded" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <span class="fs-8">🌿</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark fs-7.5 text-truncate" style="max-width: 140px;">{{ item.product.name }}</h6>
+                                <span class="fs-8 text-muted font-monospace">Qty: {{ item.quantity }}</span>
+                            </div>
+                        </div>
+                        <span class="fs-7.5 fw-bold text-success">₹ {% widthratio item.product.price 1 item.quantity %}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="detail-eco-card p-3 mb-4 bg-light rounded-3 shadow-xs border-start-0 border-top border-4 border-success">
+                <h6 class="fw-bold text-success fs-8 mb-2"><i class="fa-solid fa-heart-pulse me-1"></i> Order Savings Impact</h6>
+                <div class="d-flex justify-content-between mb-1 fs-8">
+                    <span class="text-muted">CO₂ Saved:</span>
+                    <strong class="font-monospace">{{ total_co2_savings }} kg</strong>
+                </div>
+                <div class="d-flex justify-content-between fs-8">
+                    <span class="text-muted">Plastic Saved:</span>
+                    <strong class="font-monospace">{{ total_plastic_savings }} kg</strong>
+                </div>
+            </div>
+            
+            <div class="border-top pt-3 fs-7.5">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal:</span>
+                    <span class="fw-semibold">₹ {{ subtotal }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Shipping:</span>
+                    <span class="text-success fw-semibold">FREE</span>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-2">
+                    <span class="fw-bold fs-6">Order Total:</span>
+                    <span class="fw-bold fs-6 text-success">₹ {{ subtotal }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full Screen Payment Verification Overlay -->
+<div id="payment-overlay" class="position-fixed top-0 start-0 w-100 h-100 align-items-center justify-content-center bg-dark bg-opacity-75 z-3" style="display: none;">
+    <div class="text-center text-white bg-dark p-5 rounded-4 shadow-lg border border-success" style="max-width: 450px;">
+        <div class="spinner-border text-success fs-2 mb-3" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
+        <h4 class="fw-bold text-white mb-2">Verifying Payment Securely...</h4>
+        <p class="text-muted-light fs-7.5 mb-0">Connecting to secure banking host. Please do not refresh or close this tab.</p>
+    </div>
+</div>
+
+<script>
+    function setPaymentMethod(method) {
+        document.getElementById('payment-method-field').value = method;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const payForm = document.getElementById("payment-form");
+        const overlay = document.getElementById("payment-overlay");
+        
+        if (payForm && overlay) {
+            payForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                
+                // Show simulated payment loader
+                overlay.style.display = "flex";
+                
+                setTimeout(function () {
+                    payForm.submit();
+                }, 2200);
+            });
+        }
+        
+        // Format expiry input keyups
+        const expiryInput = document.getElementById("cardexpiry");
+        if (expiryInput) {
+            expiryInput.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 2) {
+                    e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                } else {
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        // Format card number grouping
+        const cardInput = document.getElementById("cardnumber");
+        if (cardInput) {
+            cardInput.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                let formatted = "";
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) formatted += " ";
+                    formatted += value[i];
+                }
+                e.target.value = formatted.substring(0, 19);
+            });
+        }
+    });
+</script>
+{% endblock %}

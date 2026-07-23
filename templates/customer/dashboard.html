@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="fw-bold mb-4 p-3 text-success section-title">Eco-Impact Dashboard</h2>
+
+<!-- Top Stat Cards -->
+<div class="row g-4 mb-5 animate-fade-in">
+    <!-- CO2 Saved Card -->
+    <div class="col-md-4">
+        <div class="eco-metric-card bg-forest">
+            <div class="icon"><i class="fa-solid fa-cloud"></i></div>
+            <span class="fs-8 text-white-50 d-block uppercase fw-semibold">Total Carbon Offset</span>
+            <h2 class="fw-bold font-monospace mt-2 mb-1">{{ profile.total_co2_saved }} kg</h2>
+            <span class="fs-8 text-white-50"><i class="fa-solid fa-arrow-trend-up text-accent"></i> Cumulative CO₂ savings</span>
+        </div>
+    </div>
+    
+    <!-- Plastic Saved Card -->
+    <div class="col-md-4">
+        <div class="eco-metric-card bg-teal">
+            <div class="icon"><i class="fa-solid fa-trash-can"></i></div>
+            <span class="fs-8 text-white-50 d-block uppercase fw-semibold">Plastic Waste Avoided</span>
+            <h2 class="fw-bold font-monospace mt-2 mb-1">{{ profile.total_plastic_saved }} kg</h2>
+            <span class="fs-8 text-white-50"><i class="fa-solid fa-shield-heart text-accent"></i> Equivalent plastic weight reduced</span>
+        </div>
+    </div>
+    
+    <!-- Trees Planted Card -->
+    <div class="col-md-4">
+        <div class="eco-metric-card bg-emerald">
+            <div class="icon"><i class="fa-solid fa-tree"></i></div>
+            <span class="fs-8 text-white-50 d-block uppercase fw-semibold">Tree Absorption Days</span>
+            <h2 class="fw-bold font-monospace mt-2 mb-1">{{ trees_saved }}</h2>
+            <span class="fs-8 text-white-50"><i class="fa-solid fa-circle-check text-accent"></i> Equivalent tree-days absorption</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 animate-fade-in">
+    <!-- Left Column: Settings and Preferences -->
+    <div class="col-lg-5">
+        <div class="glass-panel h-100 bg-white shadow-sm border-0 rounded-4">
+            <div class="text-center mb-4">
+                <div class="avatar-large">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+                <h4 class="fw-bold text-dark mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted fs-7 mb-0">Member since {{ user.date_joined|date:"M Y" }}</p>
+                {% if profile.is_premium_member %}
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1.5 fs-8 mt-2 fw-bold">
+                        <i class="fa-solid fa-crown me-1"></i>PREMIUM MEMBER
+                    </span>
+                {% endif %}
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-gears me-1"></i> AI Preferences</h5>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="preference" class="form-label fw-medium fs-7 text-muted">Primary Green Focus</label>
+                    <select class="form-select bg-light border-0 py-2.5" id="preference" name="preference">
+                        <option value="Zero-Waste" {% if profile.preference == 'Zero-Waste' %}selected{% endif %}>Zero Waste Focus</option>
+                        <option value="Organic" {% if profile.preference == 'Organic' %}selected{% endif %}>Organic & Natural</option>
+                        <option value="Plastic-Free" {% if profile.preference == 'Plastic-Free' %}selected{% endif %}>100% Plastic Free</option>
+                        <option value="Carbon-Footprint" {% if profile.preference == 'Carbon-Footprint' %}selected{% endif %}>Carbon Footprint Minimizer</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-medium fs-7 text-muted">Membership Status</label>
+                    <div class="form-check form-switch bg-light p-3 rounded-3 border-0">
+                        <input class="form-check-input ms-0 me-3" type="checkbox" id="is_premium" name="is_premium" value="true" {% if profile.is_premium_member %}checked{% endif %}>
+                        <label class="form-check-label fw-semibold text-success fs-7" for="is_premium">Simulate Premium Member</label>
+                    </div>
+                    <div class="form-text fs-8 text-muted">Premium accounts gain access to exclusive items and extra discounts.</div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2.5 rounded-pill fw-bold shadow-sm">
+                    Save AI Settings
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: AI Chatbot -->
+    <div class="col-lg-7">
+        <div class="chatbot-box">
+            <div class="chatbot-header">
+                <div class="avatar-circle me-3">🤖</div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-white">NatureCart EcoBot</h6>
+                    <span class="fs-8 text-white-50"><i class="fa-solid fa-circle text-success fs-9 me-1"></i>Active AI Assistant</span>
+                </div>
+            </div>
+            
+            <div class="chatbot-body d-flex flex-column" id="chat-body">
+                <div class="chat-bubble bot">
+                    Hello! I'm EcoBot, your NatureCart AI guide. Ask me anything about sustainable living, reducing waste, or how to shop green!
+                </div>
+            </div>
+            
+            <div class="chatbot-footer">
+                <form id="chat-form">
+                    <div class="input-group">
+                        <input type="text" id="chat-input" class="form-control bg-light border-0 py-2.5" placeholder="Ask about plastic reductions, CO2 savings, etc..." required>
+                        <button type="submit" class="btn btn-success px-4"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

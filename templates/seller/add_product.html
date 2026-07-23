@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center animate-fade-in">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="bg-forest text-center py-4 px-3 text-white">
+                <h3 class="fw-bold mb-1">List New Eco-Friendly Product </h3>
+                <p class="text-white-50 fs-7 mb-0">List sustainable inventory and help customers track carbon reductions</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-8">
+                            <label for="name" class="form-label fw-medium text-success">Product Name</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="name" name="name" placeholder="e.g. Bamboo Toothbrush (Pack of 4)" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="category" class="form-label fw-medium text-success">Category</label>
+                            <select class="form-select bg-light border-0 py-2" id="category" name="category" required>
+                                {% for code, name in categories %}
+                                    <option value="{{ code }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-medium text-success">Product Description</label>
+                        <textarea class="form-control bg-light border-0" id="description" name="description" rows="3" placeholder="Explain the sustainability benefits, materials used, packaging, etc..." required></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="price" class="form-label fw-medium text-success">Selling Price (₹)</label>
+                            <input type="number" step="0.01" class="form-control bg-light border-0 py-2" id="price" name="price" placeholder="0.00" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="stock" class="form-label fw-medium text-success">Stock Quantity</label>
+                            <input type="number" class="form-control bg-light border-0 py-2" id="stock" name="stock" value="10" required>
+                        </div>
+                    </div>
+
+                    <!-- Eco Coefficient Values -->
+                    <div class="detail-eco-card p-3 mb-4 bg-light rounded-3 shadow-sm border-start-0 border-top border-4 border-success">
+                        <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-seedling me-1"></i> AI Eco-Saving Weights (per unit)</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="co2_saving_weight" class="form-label fw-medium fs-7 text-muted">CO₂ Saved (in kg)</label>
+                                <input type="number" step="0.01" class="form-control bg-white border-0 py-2 shadow-xs" id="co2_saving_weight" name="co2_saving_weight" placeholder="e.g. 0.50" required>
+                                <div class="form-text fs-8">CO2 reduction compared to traditional plastic equivalent.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="plastic_saving_weight" class="form-label fw-medium fs-7 text-muted">Plastic Avoided (in kg)</label>
+                                <input type="number" step="0.01" class="form-control bg-white border-0 py-2 shadow-xs" id="plastic_saving_weight" name="plastic_saving_weight" placeholder="e.g. 0.20" required>
+                                <div class="form-text fs-8">Physical plastic mass reduced from environment.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4 align-items-center">
+                        <div class="col-md-6">
+                            <label for="image" class="form-label fw-medium text-success">Product Image</label>
+                            <input type="file" class="form-control bg-light border-0" id="image" name="image" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch bg-light p-3 rounded-3 border-0 mt-4">
+                                <input class="form-check-input ms-0 me-3" type="checkbox" id="is_premium" name="is_premium">
+                                <label class="form-check-label fw-semibold text-success fs-7" for="is_premium">Premium Membership Only</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a href="{% url 'my_products' %}" class="btn btn-outline-success rounded-pill px-4">Cancel</a>
+                        <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm">Save & Publish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
