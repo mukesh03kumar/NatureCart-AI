@@ -22,29 +22,32 @@ def home(request):
         )
 
     # AI Personalized Recommendations
+    profile = None
     ai_recommendations = []
+
     if request.user.is_authenticated:
-        try:
-            profile = request.user.userprofile
-            if profile.preference:
-                # Map preference to database categories
-                pref_map = {
-                    'Zero-Waste': ['Bags', 'Dental', 'Hydration'],
-                    'Organic': ['Cleaning', 'Home'],
-                    'Plastic-Free': ['Bags', 'Dental', 'Hydration', 'Composting'],
-                    'Carbon-Footprint': ['Composting', 'Stationery', 'Home']
-                }
-                preferred_categories = pref_map.get(profile.preference, [])
-                ai_recommendations = Product.objects.filter(
-                    category__in=preferred_categories,
-                    stock__gt=0
-                ).exclude(seller=request.user).order_by('-co2_saving_weight')[:3]
-        except UserProfile.DoesNotExist:
-            pass
+        profile = UserProfile.objects.filter(user=request.user).first()
+
+    if profile and profile.preference:
+        pref_map = {
+            'Zero-Waste': ['Bags', 'Dental', 'Hydration'],
+            'Organic': ['Cleaning', 'Home'],
+            'Plastic-Free': ['Bags', 'Dental', 'Hydration', 'Composting'],
+            'Carbon-Footprint': ['Composting', 'Stationery', 'Home']
+        }
+
+        preferred_categories = pref_map.get(profile.preference, [])
+
+        ai_recommendations = Product.objects.filter(
+            category__in=preferred_categories,
+            stock__gt=0
+        ).exclude(seller=request.user).order_by('-co2_saving_weight')[:3]
 
     # If no recommendations, grab top saving products
     if not ai_recommendations:
-        ai_recommendations = Product.objects.filter(stock__gt=0).order_by('-plastic_saving_weight')[:3]
+        ai_recommendations = Product.objects.filter(
+        stock__gt=0
+        ).order_by('-plastic_saving_weight')[:3]
 
     categories = Product.CATEGORY_CHOICES
 
@@ -53,8 +56,10 @@ def home(request):
         "categories": categories,
         "ai_recommendations": ai_recommendations,
         "selected_category": category,
-        "search_query": search_query
+        "search_query": search_query,
+        "profile": profile,
     })
+
 
 def register(request):
     if request.method == "POST":
