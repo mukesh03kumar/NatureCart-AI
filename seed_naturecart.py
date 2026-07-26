@@ -15,57 +15,56 @@ def seed_database():
     # 0. Create Default Admin/Superuser
     admin_user, created = User.objects.get_or_create(
         username='admin',
-        email='admin@naturecart.com'
+        defaults={'email': 'admin@naturecart.com'}
     )
-    if created:
-        admin_user.set_password('admin123')
-        admin_user.is_superuser = True
-        admin_user.is_staff = True
-        admin_user.save()
-        print("Created Superuser account (username: admin, password: admin123)")
-    else:
-        print("Superuser account already exists.")
+    admin_user.set_password('admin123')
+    admin_user.is_superuser = True
+    admin_user.is_staff = True
+    admin_user.save()
+    print("Ensured Superuser account exists (username: admin, password: admin123)")
 
     # 1. Create Default Seller
     seller_user, created = User.objects.get_or_create(
         username='seller',
-        email='seller@naturecart.com'
+        defaults={'email': 'seller@naturecart.com'}
     )
-    if created:
-        seller_user.set_password('naturecart123')
-        seller_user.first_name = 'Eco'
-        seller_user.last_name = 'Merchant'
-        seller_user.save()
-        UserProfile.objects.create(
-            user=seller_user,
-            phone='+91 99999 88888',
-            address='NatureCart Green Warehouse, Sector 15, Bangalore',
-            role='Seller'
-        )
-        print("Created Seller account (username: seller, password: naturecart123)")
-    else:
-        print("Seller account already exists.")
+    seller_user.set_password('naturecart123')
+    seller_user.first_name = 'Eco'
+    seller_user.last_name = 'Merchant'
+    seller_user.save()
+    
+    # Ensure profile exists
+    UserProfile.objects.get_or_create(
+        user=seller_user,
+        defaults={
+            'phone': '+91 99999 88888',
+            'address': 'NatureCart Green Warehouse, Sector 15, Bangalore',
+            'role': 'Seller'
+        }
+    )
+    print("Ensured Seller account exists (username: seller, password: naturecart123)")
 
     # 2. Create Default Customer
     customer_user, created = User.objects.get_or_create(
         username='customer',
-        email='customer@naturecart.com'
+        defaults={'email': 'customer@naturecart.com'}
     )
-    if created:
-        customer_user.set_password('naturecart123')
-        customer_user.first_name = 'Jane'
-        customer_user.last_name = 'EcoShopper'
-        customer_user.save()
-        UserProfile.objects.create(
-            user=customer_user,
-            phone='+91 77777 66666',
-            address='Flat 402, Green Meadows Apartment, Chennai',
-            role='Customer',
-            preference='Zero-Waste'
-        )
-        print("Created Customer account (username: customer, password: naturecart123)")
-    else:
-        print("Customer account already exists.")
+    customer_user.set_password('naturecart123')
+    customer_user.first_name = 'Jane'
+    customer_user.last_name = 'EcoShopper'
+    customer_user.save()
+    
+    # Ensure profile exists
+    UserProfile.objects.get_or_create(
+        user=customer_user,
+        defaults={
+            'phone': '+91 77777 66666',
+            'address': 'Flat 402, Green Meadows Apartment, Chennai',
+            'role': 'Customer',
+            'preference': 'Zero-Waste'
+        }
+    )
+    print("Ensured Customer account exists (username: customer, password: naturecart123)")
 
     # 3. Seed Products (the 10 requested items)
     products_data = [
