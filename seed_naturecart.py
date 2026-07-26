@@ -12,6 +12,20 @@ from Seller_app.models import Product
 def seed_database():
     print("Starting database seeding...")
 
+    # 0. Create Default Admin/Superuser
+    admin_user, created = User.objects.get_or_create(
+        username='admin',
+        email='admin@naturecart.com'
+    )
+    if created:
+        admin_user.set_password('admin123')
+        admin_user.is_superuser = True
+        admin_user.is_staff = True
+        admin_user.save()
+        print("Created Superuser account (username: admin, password: admin123)")
+    else:
+        print("Superuser account already exists.")
+
     # 1. Create Default Seller
     seller_user, created = User.objects.get_or_create(
         username='seller',
